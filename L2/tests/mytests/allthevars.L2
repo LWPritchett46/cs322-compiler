@@ -1,0 +1,39 @@
+(@main
+  (@main
+    1
+    %myVar1 <- 5
+    %myVar2 <- 5
+    %myVar3 <- 5
+    %myVar4 <- 5
+    %myVar5 <- 5
+    %myVar6 <- 5
+    %myVar7 <- 5
+    %myVar8 <- 5
+    %myVar9 <- 5
+    %myVar10 <- 5
+    %myVar11 <- 5
+    %myVar12 <- 5
+    %myVar13 <- 5
+    %myVar14 <- 5
+    %myVar15 <- 5
+    %myVar16 <- 5
+    %myVar17 <- 5
+    %myVar17 += %myVar1
+    %myVar17 += %myVar2
+    %myVar17 += %myVar3
+    %myVar17 += %myVar4
+    %myVar17 += %myVar5
+    %myVar17 += %myVar6
+    %myVar17 += %myVar7
+    %myVar17 += %myVar8
+    %myVar17 += %myVar9
+    %myVar17 += %myVar10
+    %myVar17 += %myVar11
+    %myVar17 += %myVar12
+    %myVar17 += %myVar13
+    %myVar17 += %myVar14
+    %myVar17 += %myVar15
+    %myVar17 += %myVar16
+    return
+  )
+)

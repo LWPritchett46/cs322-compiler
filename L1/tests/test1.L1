@@ -1,0 +1,14 @@
+(@go
+  (@go
+    0 0
+
+    // Get user input
+    call input 0
+
+    // Print the result
+    rdi <- rax
+    call print 1
+
+    return
+  )
+)

@@ -1,0 +1,22 @@
+(@main
+  (@main 
+    0 0
+
+    rbx <- -2
+
+    :my_label
+    rax <- 5
+
+    :another_label
+
+    cjump rax <= rbx :my_label
+    cjump 2 < rcx :my_label
+
+    :yet_another_label
+
+    cjump 3 < 5 :another_label
+    cjump 4 = 2 :yet_another_label
+
+    return 
+  )
+)

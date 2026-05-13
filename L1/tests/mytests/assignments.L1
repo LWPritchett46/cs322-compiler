@@ -1,0 +1,25 @@
+(@main
+  (@main 
+    0 0
+
+    //regular assignment
+    rbx <- 5
+    rdi <- rax
+    r13 <- @f2
+
+    //store (to mem)
+    mem rsp 16 <- 7
+    mem rbp -8 <- rsi
+    mem r8 0 <- @f2
+
+    //load (from mem)
+    rcx <- mem rsp 8
+
+    return 
+  )
+
+  (@f2
+    0 0
+    return
+  )
+)

@@ -1,0 +1,22 @@
+(@main 
+  (@main
+    0 0
+
+    // basic arithmetic (is and arithmetic? idk)
+    rbx += rax
+    rcx -= 5
+    r13 *= r14
+    r8 &= 1
+
+    //increment and decrement
+    r12 ++
+    rdi --
+
+    //memory arithmetic (add and sub only)
+    rax += mem rsp 8
+    rbp -= mem r9 -32
+    mem rax 16 += 5
+    mem rdx 0 -= r11
+    return
+  )
+)

@@ -1,0 +1,13 @@
+(@main
+  (@main 
+    0 0
+    call @f2 11
+    return 
+  )
+
+  (@f2
+    11 3
+    rax <- rdi
+    return
+  )
+)

@@ -1,0 +1,36 @@
+(@printValues
+  9 2
+  %p0 <- rdi
+  %SPILL_p1_0 <- rsi
+  mem rsp 8 <- %SPILL_p1_0
+  %SPILL_p2_0 <- rdx
+  mem rsp 0 <- %SPILL_p2_0
+  %p3 <- rcx
+  %p4 <- r8
+  %p5 <- r9
+  %p6 <- stack-arg 0
+  %p7 <- stack-arg 8
+  %p8 <- stack-arg 16
+  :call_label2
+  rdi <- %p0
+  call print 1
+  %SPILL_p1_1 <- mem rsp 8
+  rdi <- %SPILL_p1_1
+  call print 1
+  %SPILL_p2_1 <- mem rsp 0
+  rdi <- %SPILL_p2_1
+  call print 1
+  rdi <- %p3
+  call print 1
+  rdi <- %p4
+  call print 1
+  rdi <- %p5
+  call print 1
+  rdi <- %p6
+  call print 1
+  rdi <- %p7
+  call print 1
+  rdi <- %p8
+  call print 1
+  return
+)

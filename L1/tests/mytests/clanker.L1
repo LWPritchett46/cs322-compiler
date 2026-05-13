@@ -1,0 +1,17 @@
+(@entry
+(@f
+  0 0
+  mem rsp -8 <- :ret
+  call @g 1
+  :ret
+  cjump rax < rax :done
+  :done
+  return
+)
+
+(@g
+  1 0
+  return
+)
+
+)

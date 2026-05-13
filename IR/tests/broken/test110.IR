@@ -1,0 +1,90 @@
+define void @main() {
+:entry__
+int64 %t_2
+int64 %s_5
+int64 %s_4
+int64 %s_3
+int64 %s_2
+int64 %s_1
+int64 %p_2
+int64 %newVar6_3
+int64 %newVar6_2
+int64 %newVar5_3
+int64 %newVar5_2
+int64 %newVar4_3
+int64 %newVar4_2
+int64 %newVar3_3
+int64 %newVar3_2
+int64 %newVar2_3
+int64 %newVar2_2
+int64 %newVar1_3
+int64 %newVar1_2
+int64 %newVar0_3
+int64 %newVar0_2
+int64 %n_1
+int64 %l_5
+int64 %l_4
+int64 %l_3
+int64 %l_2
+int64 %l_1
+int64 %f_3
+int64 %f_2
+int64 %f_1
+int64 %check_4
+int64 %check_3
+int64 %check_2
+br :new_label0
+
+:new_label0
+%f_1 <- 3
+%s_1 <- 3
+%n_1 <- 21
+%l_1 <- 1
+%f_2 <- %f_1
+%l_2 <- %l_1
+%s_2 <- %s_1
+br :loop
+
+:loop
+%newVar0_2 <- %l_2
+%newVar0_3 <- %newVar0_2 >> 1
+%newVar1_2 <- %n_1
+%newVar1_3 <- %newVar1_2 >> 1
+%check_2 <- %newVar0_3 = %newVar1_3
+%check_3 <- %check_2 << 1
+%check_4 <- %check_3 + 1
+%newVar2_2 <- %check_4
+%newVar2_3 <- %newVar2_2 >> 1
+br %newVar2_3 :return :false
+
+:false
+%p_2 <- %s_2
+call print(%p_2)
+%t_2 <- %s_2
+%newVar3_2 <- %s_2
+%newVar3_3 <- %newVar3_2 >> 1
+%newVar4_2 <- %f_2
+%newVar4_3 <- %newVar4_2 >> 1
+%s_3 <- %newVar3_3 + %newVar4_3
+%s_4 <- %s_3 << 1
+%s_5 <- %s_4 + 1
+%f_3 <- %t_2
+%newVar5_2 <- %l_2
+%newVar5_3 <- %newVar5_2 >> 1
+%newVar6_2 <- 3
+%newVar6_3 <- %newVar6_2 >> 1
+%l_3 <- %newVar5_3 + %newVar6_3
+%l_4 <- %l_3 << 1
+%l_5 <- %l_4 + 1
+%f_2 <- %f_3
+%l_2 <- %l_5
+%s_2 <- %s_5
+br :loop
+
+:return
+return
+
+:new_label1
+return
+
+}

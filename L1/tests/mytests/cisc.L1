@@ -1,0 +1,9 @@
+(@main
+  (@main 
+    0 0
+
+    rax @ rbx rcx 2
+
+    return 
+  )
+)
