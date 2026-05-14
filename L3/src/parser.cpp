@@ -1,4 +1,15 @@
-
+#include <sched.h>
+#include <string>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#include <set>
+#include <iterator>
+#include <cstring>
+#include <cctype>
+#include <cstdlib>
+#include <stdint.h>
+#include <assert.h>
 
 #define TAO_PEGTL_NO_MMAP
 #include <tao/pegtl.hpp>
@@ -44,8 +55,8 @@ namespace L3 {
   struct str_load : TAO_PEGTL_STRING( "load" ) {};
   struct str_store : TAO_PEGTL_STRING( "store" ) {};
   struct str_br : TAO_PEGTL_STRING( "br" ) {};
-  struct str_call : TAO_PEGTL_STRING( "call" ) {};
 
+  struct str_call : TAO_PEGTL_STRING( "call" ) {};
   struct str_print : TAO_PEGTL_STRING( "print" ) {};
   struct str_allocate : TAO_PEGTL_STRING( "allocate" ) {};
   struct str_input : TAO_PEGTL_STRING( "input" ) {};
@@ -343,6 +354,7 @@ namespace L3 {
       pegtl::seq< pegtl::at<Instruction_store_rule> , Instruction_store_rule >,
       pegtl::seq< pegtl::at<Instruction_op_assign_rule> , Instruction_op_assign_rule >,
       pegtl::seq< pegtl::at<Instruction_cmp_assign_rule> , Instruction_cmp_assign_rule >,
+      pegtl::seq< pegtl::at<Instruction_assignment_rule> , Instruction_assignment_rule >,
       pegtl::seq< pegtl::at<Instruction_branch_cond_rule> , Instruction_branch_cond_rule >,
       pegtl::seq< pegtl::at<Instruction_branch_rule> , Instruction_branch_rule >,
       pegtl::seq< pegtl::at<Instruction_return_val_rule> , Instruction_return_val_rule >,
@@ -387,5 +399,234 @@ namespace L3 {
       Function_rule,
       seps_with_comments
     > {};
+
+
+
+  /*
+  * Actions attached to grammar rules
+  */
+  template< typename Rule >
+  struct action : pegtl::nothing< Rule > {};
+
+  template<> struct action < str_add > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedOps.push_back(Op::ADD);
+    }
+  };
+
+  template<> struct action < str_sub > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedOps.push_back(Op::SUB);
+    }
+  };
+
+  template<> struct action < str_mul > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedOps.push_back(Op::MUL);
+    }
+  };
+
+  template<> struct action < str_and > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedOps.push_back(Op::AND);
+    }
+  };
+
+  template<> struct action < str_shl > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedOps.push_back(Op::SHL);
+    }
+  };
+
+  template<> struct action < str_shr > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedOps.push_back(Op::SHR);
+    }
+  };
+
+  template<> struct action < str_leq > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedCmps.push_back(Cmp::LEQ);
+    }
+  };
+
+  template<> struct action < str_geq > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedCmps.push_back(Cmp::GEQ);
+    }
+  };
+
+  template<> struct action < str_lt > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedCmps.push_back(Cmp::LT);
+    }
+  };
+
+  template<> struct action < str_gt > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedCmps.push_back(Cmp::GT);
+    }
+  };
+
+  template<> struct action < str_eq > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      p.parsedCmps.push_back(Cmp::EQ);
+    }
+  };
+
+  template<> struct action < label > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      auto l = new Label(in.string());
+
+      p.parsedItems.push_back(l);
+    }
+  };
+
+  template<> struct action < function_name_rule > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      auto l = new Label(in.string());
+
+      p.parsedItems.push_back(l);
+    }
+  };
+
+  template<> struct action < function_defn_rule > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      auto newF = new Function();
+      newF->name = in.string();
+      p.functions.push_back(newF);
+    }
+  };
+
+  template<> struct action < variable_rule > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      auto v = new Variable(in.string());
+
+      p.parsedItems.push_back(v);
+    }
+  };
+
+  template<> struct action < number > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      auto n = new Number(std::stoll(in.string()));
+
+      p.parsedItems.push_back(n);
+    }
+  };
+
+  template<> struct action < args > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      std::vector<Item *> items;
+
+      while (!p.parsedItems.empty()) {
+        auto item = p.parsedItems.back(); p.parsedItems.pop_back();
+        items.push_back(item);
+      }
+
+      auto il = new ItemList(items);
+
+      p.parsedItemLists.push_back(il);
+    }
+  };
+
+  template<> struct action < vars > {
+    template< typename Input >
+    static void apply(const Input &in, Program &p) {
+      auto currentF = p.functions.back();
+
+      while (!p.parsedItems.empty()) {
+        auto item = p.parsedItems.back(); p.parsedItems.pop_back();
+        auto var = dynamic_cast<Variable *>(item);
+        currentF->arguments.push_back(var);
+      }
+    }
+  };
+
+  template<> struct action < Instruction_return_rule > {
+    template< typename Input >
+    static void apply(const Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto i = new Instruction_return();
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
+  template<> struct action < Instruction_return_val_rule > {
+    template< typename Input >
+    static void apply(const Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto val = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_return_val(val);
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
+  template<> struct action < Instruction_assignment_rule > {
+    template< typename Input >
+    static void apply(const Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto src = p.parsedItems.back(); p.parsedItems.pop_back();
+      auto dst = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_assignment(dst, src);
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
+  template<> struct action < Instruction_op_assign_rule > {
+    template< typename Input >
+    static void apply(const Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto rhs = p.parsedItems.back(); p.parsedItems.pop_back();
+      auto op  = p.parsedOps.back();   p.parsedOps.pop_back();
+      auto lhs = p.parsedItems.back(); p.parsedItems.pop_back();
+      auto dst = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_op_assign(dst, lhs, op, rhs);
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
+  template<> struct action < Instruction_cmp_assign_rule > {
+    template< typename Input >
+    static void apply(const Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto rhs = p.parsedItems.back(); p.parsedItems.pop_back();
+      auto cmp  = p.parsedOps.back();  p.parsedCmps.pop_back();
+      auto lhs = p.parsedItems.back(); p.parsedItems.pop_back();
+      auto dst = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_op_assign(dst, lhs, cmp, rhs);
+
+      currentF->instructions.push_back(i);
+    }
+  };
 
 }
