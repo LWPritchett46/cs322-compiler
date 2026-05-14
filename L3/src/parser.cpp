@@ -37,7 +37,7 @@ namespace L3 {
   struct str_arrow : 
     pegtl::seq<
       pegtl::one< '<' >,
-      pegtl::one< '-' >,
+      pegtl::one< '-' >
     > {};
   struct str_return : TAO_PEGTL_STRING( "return" ) {};
   struct str_define : TAO_PEGTL_STRING( "define" ) {};
@@ -139,7 +139,7 @@ namespace L3 {
   struct source_rule:
     pegtl::sor<
       trivial_rule,
-      label_rule,
+      label,
       function_name_rule
     > {};
 
@@ -148,36 +148,6 @@ namespace L3 {
       variable_rule,
       function_name_rule,
       runtime_function
-    > {};
-
-  struct args:
-    pegtl::opt<
-      pegtl::seq<
-        trivial_rule,
-        pegtl::star<
-          pegtl::seq<
-            spaces,
-            pegtl::one<','>,
-            spaces,
-            trivial_rule
-          >
-        >
-      >
-    > {};
-
-  struct vars:
-    pegtl::opt<
-      pegtl::seq<
-        variable_rule,
-        pegtl::star<
-          pegtl::seq<
-            spaces,
-            pegtl::one<','>,
-            spaces,
-            variable_rule
-          >
-        >
-      >
     > {};
 
   struct comment :
@@ -215,6 +185,36 @@ namespace L3 {
         >
       >
     > { };
+
+  struct args:
+    pegtl::opt<
+      pegtl::seq<
+        trivial_rule,
+        pegtl::star<
+          pegtl::seq<
+            spaces,
+            pegtl::one<','>,
+            spaces,
+            trivial_rule
+          >
+        >
+      >
+    > {};
+
+  struct vars:
+    pegtl::opt<
+      pegtl::seq<
+        variable_rule,
+        pegtl::star<
+          pegtl::seq<
+            spaces,
+            pegtl::one<','>,
+            spaces,
+            variable_rule
+          >
+        >
+      >
+    > {};
 
   struct Instruction_return_rule:
     pegtl::seq< 
@@ -321,7 +321,7 @@ namespace L3 {
 
   struct Instruction_call_assign_rule:
     pegtl::seq<
-      var,
+      variable_rule,
       spaces,
       str_arrow,
       str_call,

@@ -21,5 +21,5 @@ namespace L3 {
   class Program {
     public:
       std::vector<Function *> functions;
-  }
+  };
 }
