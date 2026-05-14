@@ -629,4 +629,101 @@ namespace L3 {
     }
   };
 
+  template<> struct action < Instruction_load_rule > {
+    template< typename Input >
+    static void apply(Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto ptr = p.parsedItems.back(); p.parsedItems.pop_back();
+      auto dst = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_load(dst, ptr);
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
+  template<> struct action < Instruction_store_rule > {
+    template< typename Input >
+    static void apply(Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto src = p.parsedItems.back(); p.parsedItems.pop_back();
+      auto ptr = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_store(ptr, src);
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
+  template<> struct action < Instruction_label_rule > {
+    template< typename Input >
+    static void apply(Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto lbl = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_label(lbl);
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
+  template<> struct action < Instruction_branch_rule > {
+    template< typename Input >
+    static void apply(Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto lbl = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_branch(lbl);
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
+  template<> struct action < Instruction_branch_cond_rule > {
+    template< typename Input >
+    static void apply(Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto lbl = p.parsedItems.back(); p.parsedItems.pop_back();
+      auto cond = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_branch_cond(cond, lbl);
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
+  template<> struct action < Instruction_call_rule > {
+    template< typename Input >
+    static void apply(Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto args = p.parsedItemLists.back(); p.parsedItemLists.pop_back();
+      auto callee = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_call(callee, args);
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
+  template<> struct action < Instruction_call_assign_rule > {
+    template< typename Input >
+    static void apply(Input&, Program &p) {
+      auto currentF = p.functions.back();
+
+      auto args = p.parsedItemLists.back(); p.parsedItemLists.pop_back();
+      auto callee = p.parsedItems.back(); p.parsedItems.pop_back();
+      auto dst = p.parsedItems.back(); p.parsedItems.pop_back();
+
+      auto i = new Instruction_call_assign(dst, callee, args);
+
+      currentF->instructions.push_back(i);
+    }
+  };
+
 }

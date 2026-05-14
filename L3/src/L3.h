@@ -112,6 +112,75 @@ namespace L3 {
       Item *rhs;
   };
 
+  class Instruction_load : public Instruction {
+    public:
+      Instruction_load(Item *dst, Item *ptr);
+      ~Instruction_load();
+
+    private:
+      Item *dst;
+      Item *ptr;
+  };
+
+  class Instruction_store : public Instruction {
+    public:
+      Instruction_store(Item *ptr, Item *src);
+      ~Instruction_store();
+
+    private:
+      Item *ptr;
+      Item *src;
+  };
+
+  class Instruction_label : public Instruction {
+    public:
+      Instruction_label(Item *lbl);
+      ~Instruction_label();
+
+    private:
+      Item *lbl;
+  };
+
+  class Instruction_branch : public Instruction {
+    public:
+      Instruction_branch(Item *lbl);
+      ~Instruction_branch();
+
+    private:
+      Item *lbl;
+  };
+
+  class Instruction_branch_cond : public Instruction {
+    public:
+      Instruction_branch_cond(Item *cond, Item *lbl);
+      ~Instruction_branch_cond();
+
+    private:
+      Item *cond;
+      Item *lbl;
+  };
+
+  class Instruction_call : public Instruction {
+    public:
+      Instruction_call(Item *callee, ItemList *args);
+      ~Instruction_call();
+
+    private:
+      Item *callee;
+      ItemList *args;
+  };
+
+  class Instruction_call_assign : public Instruction {
+    public:
+      Instruction_call_assign(Item *dst, Item *callee, ItemList *args);
+      ~Instruction_call_assign();
+
+    private:
+      Item *dst;
+      Item *callee;
+      ItemList *args;
+  };
+
   class Function {
     public:
       std::string name;

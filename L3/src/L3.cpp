@@ -74,6 +74,82 @@ Instruction_cmp_assign::~Instruction_cmp_assign() {
   return;
 }
 
+Instruction_load::Instruction_load(Item *dst, Item *ptr)
+  : dst {dst}, ptr {ptr} {
+  return;
+}
+
+Instruction_load::~Instruction_load() {
+  delete dst;
+  delete ptr;
+  return;
+}
+
+Instruction_store::Instruction_store(Item *ptr, Item *src)
+  : ptr {ptr}, src {src} {
+  return;
+}
+
+Instruction_store::~Instruction_store() {
+  delete ptr;
+  delete src;
+  return;
+}
+
+Instruction_label::Instruction_label(Item *lbl)
+  : lbl {lbl} {
+  return;
+}
+
+Instruction_label::~Instruction_label() {
+  delete lbl;
+  return;
+}
+
+Instruction_branch::Instruction_branch(Item *lbl) 
+  : lbl {lbl} {
+  return;
+}
+
+Instruction_branch::~Instruction_branch() {
+  delete lbl;
+  return;
+}
+
+Instruction_branch_cond::Instruction_branch_cond(Item *cond, Item *lbl)
+  : cond {cond}, lbl {lbl} {
+  return;
+}
+
+Instruction_branch_cond::~Instruction_branch_cond() {
+  delete cond;
+  delete lbl;
+  return;
+}
+
+Instruction_call::Instruction_call(Item *callee, ItemList *args)
+  : callee {callee}, args {args} {
+  return;
+}
+
+Instruction_call::~Instruction_call() {
+  delete callee;
+  delete args;
+  return;
+}
+
+Instruction_call_assign::Instruction_call_assign(Item *dst, Item *callee, ItemList *args)
+  : dst {dst}, callee {callee}, args {args} {
+  return;
+}
+
+Instruction_call_assign::~Instruction_call_assign() {
+  delete dst;
+  delete callee;
+  delete args;
+  return;
+}
+
 Function::~Function() {
   for (auto a : arguments) {
     delete a;
