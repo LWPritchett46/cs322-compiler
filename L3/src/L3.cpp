@@ -12,8 +12,17 @@ Variable::Variable(std::string name)
   return;
 }
 
-Label::Label(std::string lbl)
-  : lbl {lbl} {
+Label::Label(std::string name)
+  : name {name} {
+  return;
+}
+
+std::string Label::getName() {
+  return name;
+}
+
+void Label::setName(std::string newName) {
+  name = newName;
   return;
 }
 
@@ -26,6 +35,11 @@ ItemList::~ItemList() {
   for (auto item : items) {
     delete item;
   }
+  return;
+}
+
+void Instruction::rewriteLabels(std::map<std::string, std::string> labelMap) {
+  // the default case - do nothing
   return;
 }
 
@@ -48,6 +62,12 @@ Instruction_assignment::~Instruction_assignment() {
   delete dst;
   delete src;
   return;
+}
+
+void Instruction_assignment::rewriteLabels(std::map<std::string, std::string> labelMap) {
+  if (auto l = dynamic_cast<Label *>(src)) {
+    l->setName(labelMap[l->getName()]);
+  }
 }
 
 Instruction_op_assign::Instruction_op_assign(Item *dst, Item *lhs, Op op, Item *rhs)
@@ -96,6 +116,12 @@ Instruction_store::~Instruction_store() {
   return;
 }
 
+void Instruction_store::rewriteLabels(std::map<std::string, std::string> labelMap) {
+  if (auto l = dynamic_cast<Label *>(src)) {
+    l->setName(labelMap[l->getName()]);
+  }
+}
+
 Instruction_label::Instruction_label(Item *lbl)
   : lbl {lbl} {
   return;
@@ -104,6 +130,16 @@ Instruction_label::Instruction_label(Item *lbl)
 Instruction_label::~Instruction_label() {
   delete lbl;
   return;
+}
+
+Item *Instruction_label::getLabel() {
+  return lbl;
+}
+
+void Instruction_label::rewriteLabels(std::map<std::string, std::string> labelMap) {
+  if (auto l = dynamic_cast<Label *>(lbl)) {
+    l->setName(labelMap[l->getName()]);
+  }
 }
 
 Instruction_branch::Instruction_branch(Item *lbl) 
@@ -116,6 +152,12 @@ Instruction_branch::~Instruction_branch() {
   return;
 }
 
+void Instruction_branch::rewriteLabels(std::map<std::string, std::string> labelMap) {
+  if (auto l = dynamic_cast<Label *>(lbl)) {
+    l->setName(labelMap[l->getName()]);
+  }
+}
+
 Instruction_branch_cond::Instruction_branch_cond(Item *cond, Item *lbl)
   : cond {cond}, lbl {lbl} {
   return;
@@ -125,6 +167,12 @@ Instruction_branch_cond::~Instruction_branch_cond() {
   delete cond;
   delete lbl;
   return;
+}
+
+void Instruction_branch_cond::rewriteLabels(std::map<std::string, std::string> labelMap) {
+  if (auto l = dynamic_cast<Label *>(lbl)) {
+    l->setName(labelMap[l->getName()]);
+  }
 }
 
 Instruction_call::Instruction_call(Item *callee, ItemList *args)

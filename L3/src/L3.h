@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 namespace L3 {
 
@@ -45,10 +46,12 @@ namespace L3 {
 
   class Label : public Item {
     public:
-      Label(std::string lbl);
+      Label(std::string name);
+      std::string getName();
+      void setName(std::string newName);
 
     private:
-      std::string lbl;
+      std::string name;
   };
 
   class ItemList {
@@ -63,6 +66,7 @@ namespace L3 {
   class Instruction {
     public:
       virtual ~Instruction() = default;
+      virtual void rewriteLabels(std::map<std::string, std::string> labelMap);
   };
 
   class Instruction_return : public Instruction {
@@ -82,6 +86,7 @@ namespace L3 {
     public:
       Instruction_assignment(Item *dst, Item *src);
       ~Instruction_assignment();
+      virtual void rewriteLabels(std::map<std::string, std::string> labelMap) override;
 
     private:
       Item *dst;
@@ -126,6 +131,7 @@ namespace L3 {
     public:
       Instruction_store(Item *ptr, Item *src);
       ~Instruction_store();
+      virtual void rewriteLabels(std::map<std::string, std::string> labelMap) override;
 
     private:
       Item *ptr;
@@ -136,6 +142,8 @@ namespace L3 {
     public:
       Instruction_label(Item *lbl);
       ~Instruction_label();
+      Item *getLabel();
+      virtual void rewriteLabels(std::map<std::string, std::string> labelMap) override;
 
     private:
       Item *lbl;
@@ -145,6 +153,7 @@ namespace L3 {
     public:
       Instruction_branch(Item *lbl);
       ~Instruction_branch();
+      virtual void rewriteLabels(std::map<std::string, std::string> labelMap) override;
 
     private:
       Item *lbl;
@@ -154,6 +163,7 @@ namespace L3 {
     public:
       Instruction_branch_cond(Item *cond, Item *lbl);
       ~Instruction_branch_cond();
+      virtual void rewriteLabels(std::map<std::string, std::string> labelMap) override;
 
     private:
       Item *cond;
