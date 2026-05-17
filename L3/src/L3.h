@@ -6,6 +6,27 @@
 
 namespace L3 {
 
+  class TreeNode;
+
+  enum class NodeKind {
+    VAR,
+    NUM,
+    LBL,
+
+    OP,
+
+    CMP,
+
+    LOAD,
+    STORE,
+
+    MOVE,
+
+    RETURN,
+    BRANCH,
+    CJUMP
+  };
+
   enum class Op {
     ADD,
     SUB,
@@ -26,11 +47,13 @@ namespace L3 {
   class Item {
     public:
       virtual ~Item() = default;
+      virtual TreeNode* makeNode() const = 0;
   };
 
   class Number : public Item {
     public:
       Number(int64_t value);
+      virtual TreeNode* makeNode() const override;
 
     private:
       int64_t value;
@@ -39,6 +62,7 @@ namespace L3 {
   class Variable : public Item {
     public:
       Variable(std::string name);
+      virtual TreeNode* makeNode() const override;
     
     private:
       std::string name;
@@ -49,6 +73,7 @@ namespace L3 {
       Label(std::string name);
       std::string getName();
       void setName(std::string newName);
+      virtual TreeNode* makeNode() const override;
 
     private:
       std::string name;
@@ -63,20 +88,37 @@ namespace L3 {
       std::vector<Item *> items;
   };
 
+
+  class TreeNode {
+    public:
+      NodeKind kind;
+
+      std::vector<TreeNode*> children;
+
+      const Item *item = nullptr;
+
+      Op op;
+      Cmp cmp;
+  };
+
+
   class Instruction {
     public:
       virtual ~Instruction() = default;
       virtual void rewriteLabels(std::map<std::string, std::string> labelMap);
+      virtual TreeNode* generateTree() const = 0;
   };
 
   class Instruction_return : public Instruction {
-
+    public:
+      virtual TreeNode* generateTree() const override;
   };
 
   class Instruction_return_val : public Instruction {
     public:
       Instruction_return_val(Item *val);
       ~Instruction_return_val();
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *val;
@@ -87,6 +129,7 @@ namespace L3 {
       Instruction_assignment(Item *dst, Item *src);
       ~Instruction_assignment();
       virtual void rewriteLabels(std::map<std::string, std::string> labelMap) override;
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *dst;
@@ -97,6 +140,7 @@ namespace L3 {
     public:
       Instruction_op_assign(Item *dst, Item *lhs, Op op, Item *rhs);
       ~Instruction_op_assign();
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *dst;
@@ -109,6 +153,7 @@ namespace L3 {
     public:
       Instruction_cmp_assign(Item *dst, Item *lhs, Cmp cmp, Item *rhs);
       ~Instruction_cmp_assign();
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *dst;
@@ -121,6 +166,7 @@ namespace L3 {
     public:
       Instruction_load(Item *dst, Item *ptr);
       ~Instruction_load();
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *dst;
@@ -132,6 +178,7 @@ namespace L3 {
       Instruction_store(Item *ptr, Item *src);
       ~Instruction_store();
       virtual void rewriteLabels(std::map<std::string, std::string> labelMap) override;
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *ptr;
@@ -144,6 +191,7 @@ namespace L3 {
       ~Instruction_label();
       Item *getLabel();
       virtual void rewriteLabels(std::map<std::string, std::string> labelMap) override;
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *lbl;
@@ -154,6 +202,7 @@ namespace L3 {
       Instruction_branch(Item *lbl);
       ~Instruction_branch();
       virtual void rewriteLabels(std::map<std::string, std::string> labelMap) override;
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *lbl;
@@ -164,6 +213,7 @@ namespace L3 {
       Instruction_branch_cond(Item *cond, Item *lbl);
       ~Instruction_branch_cond();
       virtual void rewriteLabels(std::map<std::string, std::string> labelMap) override;
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *cond;
@@ -174,6 +224,7 @@ namespace L3 {
     public:
       Instruction_call(Item *callee, ItemList *args);
       ~Instruction_call();
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *callee;
@@ -184,6 +235,7 @@ namespace L3 {
     public:
       Instruction_call_assign(Item *dst, Item *callee, ItemList *args);
       ~Instruction_call_assign();
+      virtual TreeNode* generateTree() const override;
 
     private:
       Item *dst;
@@ -191,11 +243,30 @@ namespace L3 {
       ItemList *args;
   };
 
+
+  class FunctionElement {
+    public:
+      virtual ~FunctionElement() = default;
+  };
+
+  class Context : public FunctionElement {
+    public:
+      std::vector<Instruction *> instructions;
+
+      std::vector<TreeNode *> forest;
+  };
+
+  class SoloInstruction : public FunctionElement {
+    public:
+      Instruction *inst;
+  };
+
   class Function {
     public:
       std::string name;
       std::vector<Variable *> arguments;
       std::vector<Instruction *> instructions;
+      std::vector<FunctionElement *> elements;
 
       ~Function();
   };

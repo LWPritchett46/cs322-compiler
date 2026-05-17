@@ -8,8 +8,10 @@ namespace L3 {
 
 /*
 * Deterministic mangling. Label :labelname in function @functionname becomes 
-* :functionname_labelname.
+* :functionname_labelname_id.
 */
+
+static uint64_t uniqueLabelId = 0;
 
 void globalizeLabels(Function *f) {
   std::map<std::string, std::string> labelMap;
@@ -20,7 +22,8 @@ void globalizeLabels(Function *f) {
     if (auto l = dynamic_cast<Instruction_label *>(inst)) {
       auto lbl = dynamic_cast<Label *>(l->getLabel());
 
-      std::string global = ":" + f->name.substr(1) + "_" + lbl->getName();
+      std::string global = ":" + f->name.substr(1) + "_" + lbl->getName()
+                         + "_" + std::to_string(uniqueLabelId++);
 
       labelMap[lbl->getName()] = global;
     }
